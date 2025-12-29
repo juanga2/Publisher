@@ -13,6 +13,12 @@ def _now() -> dt.datetime:
     return dt.datetime.now(dt.timezone.utc)
 
 
+def _ensure_aware(value: dt.datetime) -> dt.datetime:
+    if value.tzinfo is None:
+        return value.replace(tzinfo=dt.timezone.utc)
+    return value
+
+
 def get_session(request: Request, db: Session) -> Optional[SessionModel]:
     session_id = request.cookies.get(settings.session_cookie_name)
     if not session_id:
@@ -20,7 +26,7 @@ def get_session(request: Request, db: Session) -> Optional[SessionModel]:
     session = db.get(SessionModel, session_id)
     if not session:
         return None
-    if session.expires_at < _now():
+    if _ensure_aware(session.expires_at) < _now():
         db.delete(session)
         db.commit()
         return None
