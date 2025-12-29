@@ -48,11 +48,11 @@ jobs:
 
       - name: API tests
         working-directory: apps/api
-        run: pytest
+        run: PYTHONPATH=. pytest
 
   secret-scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Gitleaks
-        uses: trufflesecurity/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v2
